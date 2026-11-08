@@ -28,6 +28,9 @@ class ApiConstants {
   static String startDelivery(int id) => '/orders/$id/start';
   static const String confirmQr = '/orders/confirm-qr';
 
+  // Device Token / Push Notification Endpoints
+  static const String deviceToken = '/device-token';
+
   // Standard API Error Codes
   static const String errUnauthenticated = 'UNAUTHENTICATED';
   static const String errInvalidCredentials = 'INVALID_CREDENTIALS';

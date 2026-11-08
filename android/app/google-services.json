@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "105694535614",
+    "project_id": "al-embratoor",
+    "storage_bucket": "al-embratoor.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:105694535614:android:784d59bc6583921f0e4b7a",
+        "android_client_info": {
+          "package_name": "com.mostafasalama.delivery"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB3MostafaSalamaProductionKeyX19"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
+

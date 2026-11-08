@@ -205,4 +205,44 @@ class ApiClient {
       throw AppException.fromDioException(e);
     }
   }
+
+  // -------------------------------------------------------------
+  // 3. Push Notification / FCM Device Token Endpoints
+  // -------------------------------------------------------------
+
+  /// POST /api/delivery/device-token
+  Future<bool> registerDeviceToken({
+    required String fcmToken,
+    String platform = 'android',
+  }) async {
+    try {
+      final response = await _dio.post(
+        ApiConstants.deviceToken,
+        data: {
+          'fcm_token': fcmToken.trim(),
+          'platform': platform,
+        },
+      );
+      return response.statusCode == 200;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// DELETE /api/delivery/device-token
+  Future<bool> unregisterDeviceToken({
+    required String fcmToken,
+  }) async {
+    try {
+      final response = await _dio.delete(
+        ApiConstants.deviceToken,
+        data: {
+          'fcm_token': fcmToken.trim(),
+        },
+      );
+      return response.statusCode == 200;
+    } catch (_) {
+      return false;
+    }
+  }
 }

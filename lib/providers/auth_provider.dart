@@ -4,6 +4,7 @@ import '../core/storage/storage_service.dart';
 import '../core/errors/app_exception.dart';
 import '../models/driver_model.dart';
 import '../models/delivery_stats_model.dart';
+import '../services/notification_service.dart';
 
 enum AuthStatus { uninitialized, authenticated, unauthenticated, mustChangePassword }
 
@@ -91,6 +92,10 @@ class AuthProvider extends ChangeNotifier {
       } else {
         _status = AuthStatus.unauthenticated;
       }
+
+      if (_status == AuthStatus.authenticated) {
+        NotificationService.registerToken(_apiClient);
+      }
     } catch (_) {
       _status = AuthStatus.unauthenticated;
     } finally {
@@ -145,6 +150,7 @@ class AuthProvider extends ChangeNotifier {
         _status = AuthStatus.mustChangePassword;
       } else {
         _status = AuthStatus.authenticated;
+        NotificationService.registerToken(_apiClient);
       }
 
       _isLoading = false;
@@ -186,6 +192,7 @@ class AuthProvider extends ChangeNotifier {
         await _storageService.saveDriver(_driver!);
       }
       _status = AuthStatus.authenticated;
+      NotificationService.registerToken(_apiClient);
       _isLoading = false;
       notifyListeners();
       return true;
@@ -201,6 +208,10 @@ class AuthProvider extends ChangeNotifier {
   Future<void> logout() async {
     _isLoading = true;
     notifyListeners();
+
+    try {
+      await NotificationService.unregisterToken(_apiClient);
+    } catch (_) {}
 
     try {
       await _apiClient.logout();

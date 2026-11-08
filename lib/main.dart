@@ -36,6 +36,9 @@ void main() async {
   // Initialize centralized API client
   final apiClient = ApiClient(storageService: storageService);
 
+  // Initialize push notifications asynchronously (FCM + local alerts)
+  NotificationService.init(apiClient);
+
   runApp(
     MultiProvider(
       providers: [
