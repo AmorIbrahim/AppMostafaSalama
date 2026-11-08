@@ -24,13 +24,18 @@ class _QrScannerScreenState extends State<QrScannerScreen>
   late final MobileScannerController _scannerController;
   late final AnimationController _animationController;
   bool _isTorchOn = false;
+  bool _isHandlingCode = false;
 
   @override
   void initState() {
     super.initState();
     _scannerController = MobileScannerController(
-      detectionSpeed: DetectionSpeed.noDuplicates,
+      autoStart: true,
+      detectionSpeed: DetectionSpeed.normal,
+      detectionTimeoutMs: 200,
       facing: CameraFacing.back,
+      formats: const [BarcodeFormat.qrCode],
+      returnImage: false,
       torchEnabled: false,
     );
 
@@ -51,7 +56,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
     BarcodeCapture capture,
     QrScannerProvider qrProv,
   ) async {
-    if (qrProv.isProcessing || qrProv.isDelivered) return;
+    if (_isHandlingCode || qrProv.isProcessing || qrProv.isDelivered) return;
 
     final List<Barcode> barcodes = capture.barcodes;
     if (barcodes.isEmpty) return;
@@ -59,46 +64,65 @@ class _QrScannerScreenState extends State<QrScannerScreen>
     final String? rawValue = barcodes.first.rawValue;
     if (rawValue == null || rawValue.trim().isEmpty) return;
 
-    final success = await qrProv.processBarcode(
-      rawValue,
-      expectedOrderId: widget.orderId,
-    );
+    _isHandlingCode = true;
 
-    if (!mounted) return;
-
-    if (success) {
-      // Pause scanner
-      await _scannerController.stop();
+    try {
+      final success = await qrProv.processBarcode(
+        rawValue,
+        expectedOrderId: widget.orderId,
+      );
 
       if (!mounted) return;
 
-      // Notify OrdersProvider of delivery event
-      final deliveredOrder = qrProv.confirmedOrder;
-      final confData = qrProv.confirmationDetails;
-      final ordersProvider = context.read<OrdersProvider>();
+      if (success) {
+        // Pause scanner
+        await _scannerController.stop();
 
-      if (deliveredOrder != null) {
-        ordersProvider.onOrderDelivered(
-          deliveredOrder.id,
-          deliveredOrder.deliveredAt ?? DateTime.now(),
-        );
-      } else if (widget.orderId != null) {
-        ordersProvider.onOrderDelivered(
-          widget.orderId!,
-          DateTime.now(),
-        );
-      }
+        if (!mounted) return;
 
-      // Navigate to Celebration Screen
-      if (mounted) {
-        await Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (_) => DeliverySuccessScreen(
-              order: deliveredOrder,
-              confirmationData: confData,
+        // Notify OrdersProvider of delivery event
+        final deliveredOrder = qrProv.confirmedOrder;
+        final confData = qrProv.confirmationDetails;
+        final ordersProvider = context.read<OrdersProvider>();
+
+        if (deliveredOrder != null) {
+          ordersProvider.onOrderDelivered(
+            deliveredOrder.id,
+            deliveredOrder.deliveredAt ?? DateTime.now(),
+          );
+        } else if (widget.orderId != null) {
+          ordersProvider.onOrderDelivered(
+            widget.orderId!,
+            DateTime.now(),
+          );
+        }
+
+        // Navigate to Celebration Screen
+        if (mounted) {
+          await Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (_) => DeliverySuccessScreen(
+                order: deliveredOrder,
+                confirmationData: confData,
+              ),
             ),
-          ),
-        );
+          );
+        }
+      } else {
+        // Allow re-scanning after brief delay if token was invalid
+        Future.delayed(const Duration(milliseconds: 1500), () {
+          if (mounted) {
+            setState(() {
+              _isHandlingCode = false;
+            });
+          }
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _isHandlingCode = false;
+        });
       }
     }
   }
@@ -152,7 +176,6 @@ class _QrScannerScreenState extends State<QrScannerScreen>
                 // 1. Mobile Camera Scanner
                 MobileScanner(
                   controller: _scannerController,
-                  scanWindow: scanWindow,
                   onDetect: (capture) => _handleBarcodeDetected(capture, qrProv),
                   errorBuilder: (context, error, child) {
                     return Center(
