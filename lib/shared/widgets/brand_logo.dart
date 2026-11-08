@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
 
-/// Authentic Mostafa Salama Restaurant Brand Logo & Crest
+/// Authentic Mostafa Salama Restaurant Official Brand Logo
 class BrandLogo extends StatelessWidget {
   final double size;
   final bool showSubtitle;
@@ -9,7 +9,7 @@ class BrandLogo extends StatelessWidget {
 
   const BrandLogo({
     Key? key,
-    this.size = 80,
+    this.size = 110,
     this.showSubtitle = true,
     this.isLight = false,
   }) : super(key: key);
@@ -19,72 +19,46 @@ class BrandLogo extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Brand Crest / Icon Badge
-        Container(
-          width: size,
+        // Official Restaurant Logo Image
+        Image.asset(
+          'assets/images/logo.png',
+          width: size * 1.6,
           height: size,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: const LinearGradient(
-              colors: [Color(0xFFFFBF33), AppColors.primary, Color(0xFFC78400)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.primary.withOpacity(0.35),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
+          fit: BoxFit.contain,
+          errorBuilder: (context, error, stackTrace) {
+            return Container(
+              width: size,
+              height: size,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.primary,
               ),
-            ],
-            border: Border.all(color: Colors.white.withOpacity(0.2), width: 2),
-          ),
-          child: Center(
-            child: Icon(
-              Icons.restaurant_menu_rounded,
-              size: size * 0.52,
-              color: Colors.black,
-            ),
-          ),
+              child: const Icon(
+                Icons.restaurant_menu_rounded,
+                size: 44,
+                color: Colors.black,
+              ),
+            );
+          },
         ),
         if (showSubtitle) ...[
-          const SizedBox(height: 14),
-          // Restaurant Name in Arabic
-          Text(
-            'مصطفى سلامة',
-            style: TextStyle(
-              fontSize: size * 0.32,
-              fontWeight: FontWeight.w900,
-              letterSpacing: 0.5,
-              color: isLight ? AppColors.textLightPrimary : AppColors.textDarkPrimary,
-            ),
-          ),
-          const SizedBox(height: 2),
-          // Tagline / English Subtitle
+          const SizedBox(height: 8),
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                width: 14,
-                height: 1.5,
-                color: AppColors.primary,
-              ),
-              const SizedBox(width: 6),
+              Container(width: 14, height: 1.5, color: AppColors.primary),
+              const SizedBox(width: 8),
               const Text(
-                'MOSTAFA SALAMA DELIVERY',
+                'تطبيق مناديب التوصيل • DRIVER PORTAL',
                 style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w800,
-                  letterSpacing: 2.0,
+                  letterSpacing: 1.5,
                   color: AppColors.primary,
                 ),
               ),
-              const SizedBox(width: 6),
-              Container(
-                width: 14,
-                height: 1.5,
-                color: AppColors.primary,
-              ),
+              const SizedBox(width: 8),
+              Container(width: 14, height: 1.5, color: AppColors.primary),
             ],
           ),
         ],

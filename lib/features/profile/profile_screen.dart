@@ -57,6 +57,14 @@ class ProfileScreen extends StatelessWidget {
               ),
               child: Column(
                 children: [
+                  // Official Restaurant Logo
+                  Image.asset(
+                    'assets/images/logo.png',
+                    height: 52,
+                    fit: BoxFit.contain,
+                  ),
+                  const SizedBox(height: 14),
+
                   // Avatar
                   Container(
                     width: 72,

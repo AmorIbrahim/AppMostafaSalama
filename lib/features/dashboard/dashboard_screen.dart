@@ -170,6 +170,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ),
                       ),
 
+                      // Restaurant Brand Logo
+                      Image.asset(
+                        'assets/images/logo.png',
+                        height: 36,
+                        fit: BoxFit.contain,
+                      ),
+                      const SizedBox(width: 8),
+
                       // Profile Shortcut Button
                       IconButton(
                         onPressed: _navigateToProfile,
